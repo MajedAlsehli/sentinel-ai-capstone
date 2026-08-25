@@ -36,5 +36,5 @@
 - [x] Notebook cells have stable IDs
 - [ ] Notebook restarted and executed top-to-bottom with no errors
 - [ ] Every notebook demo cell has captured output
-- [ ] Git repository contains meaningful incremental commits
+- [x] Git repository contains meaningful incremental commits
 - [ ] Final `python scripts/validate_submission.py` audit passes

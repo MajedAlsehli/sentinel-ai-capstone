@@ -24,7 +24,7 @@ def scan_url(url: str) -> dict:
                 "ip": page.get("ip"),
                 "country": page.get("country"),
                 "scan_time": task.get("time"),
-                "result_url": task.get("reportURL"),
+                "result_url": item.get("result") or task.get("reportURL"),
             }
         )
     return {
