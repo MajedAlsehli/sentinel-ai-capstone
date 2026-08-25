@@ -3,9 +3,9 @@
 ## Identity and programme
 
 - [x] Real full name appears in README and notebook
-- [ ] Exact SDAIA Academy programme name appears in README and notebook
+- [x] Exact SDAIA Academy programme name appears in README and notebook
 - [x] Cohort dates appear in README and notebook
-- [ ] Declared Track A/B/C/D appears in README and notebook
+- [x] Declared Track A/B/C/D appears in README and notebook
 - [x] SDAIA Academy GitHub link is present
 
 ## Eight scored sections

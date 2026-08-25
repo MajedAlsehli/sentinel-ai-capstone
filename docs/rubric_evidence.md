@@ -6,7 +6,7 @@ Sentinel uses real argument-dependent tools rather than hardcoded response strin
 
 ## 2. Multi-agent routing — 15 points
 
-The project uses the supervisor routing pattern for the declared capstone track. `route_request` asks the LLM for a validated `RouteDecision`, and the Functional API dispatches that result to an email, URL, IP, or file specialist. This pattern fits because each artifact requires a different prompt and tool set. No substring or keyword condition makes the routing decision; Python conditions only execute the already-selected destination.
+The project declares **Track A — Supervisor + workers**, matching the course's definition of a dedicated agent deciding which specialist works next. `route_request` asks the LLM for a validated `RouteDecision`, and the Functional API dispatches that result to an email, URL, IP, or file specialist. This pattern fits because each artifact requires a different prompt and tool set. No substring or keyword condition makes the routing decision; Python conditions only execute the already-selected destination.
 
 ## 3. Retrieval-augmented generation — 15 points
 
