@@ -1,9 +1,10 @@
 # Sentinel AI — Evidence-Grounded Cybersecurity Investigation
 
-**Author:** Majed Alsehli  
-**Training programme:** SDAIA Academy — Building Agentic AI Systems  
-**Cohort:** 17 August 2025 – 21 May 2026  
-**Declared track:** A — Supervisor + workers
+- **Author:** Majed Mohamed Alsehli (ماجد محمد السهلي)
+- **Training programme:** SDAIA Academy — Building Agentic AI Systems
+- **Instructor:** محمد البلادي
+- **Cohort:** 17 August 2025 – 21 May 2026
+- **Declared track:** A — Supervisor + workers
 
 Sentinel AI is an agentic cybersecurity investigation workflow for suspicious emails, URLs, IP addresses, and file hashes. An LLM supervisor selects a specialist; that specialist chooses and executes real tools; Hybrid RAG adds stable incident-response guidance; a structured analyzer produces a cautious verdict; and LangGraph pauses before an approved report is persisted.
 

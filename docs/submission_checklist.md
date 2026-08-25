@@ -2,7 +2,8 @@
 
 ## Identity and programme
 
-- [x] Real full name appears in README and notebook
+- [x] Full English and Arabic name appears in README and notebook
+- [x] Instructor name appears in README and notebook
 - [x] Exact SDAIA Academy programme name appears in README and notebook
 - [x] Cohort dates appear in README and notebook
 - [x] Declared Track A/B/C/D appears in README and notebook

@@ -7,6 +7,7 @@ name = "sentinel-ai-capstone"
 version = "1.0.0"
 description = "Evidence-grounded agentic cybersecurity investigation workflow"
 requires-python = ">=3.11"
+authors = [{ name = "Majed Mohamed Alsehli" }]
 
 [tool.setuptools.packages.find]
 where = ["src"]
