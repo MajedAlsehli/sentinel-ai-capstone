@@ -3,9 +3,9 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sentinel-ai-capstone"
+name = "sentinel-ai"
 version = "1.0.0"
-description = "Evidence-grounded agentic cybersecurity investigation workflow"
+description = "Agentic cybersecurity investigation workflow"
 requires-python = ">=3.11"
 authors = [{ name = "Majed Mohamed Alsehli" }]
 

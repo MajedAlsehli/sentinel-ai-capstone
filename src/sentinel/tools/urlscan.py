@@ -9,7 +9,7 @@ def scan_url(url: str) -> dict:
         "https://urlscan.io/api/v1/search/",
         params={"q": f'page.url:"{url}"'},
         timeout=20,
-        headers={"User-Agent": "Sentinel-AI-Capstone/1.0"},
+        headers={"User-Agent": "Sentinel-AI/1.0"},
     )
     response.raise_for_status()
     data = response.json()

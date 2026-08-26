@@ -67,5 +67,5 @@ def langsmith_status() -> dict[str, object]:
         "api_key_configured": bool(
             get_env("LANGCHAIN_API_KEY") or get_env("LANGSMITH_API_KEY")
         ),
-        "project": get_env("LANGCHAIN_PROJECT", "sentinel-ai-capstone"),
+        "project": get_env("LANGCHAIN_PROJECT", "sentinel-ai"),
     }
