@@ -61,13 +61,15 @@ Run the automated tests:
 python -m pytest -q
 ```
 
+The complete live-provider walkthrough requires the OpenAI, LangSmith, AbuseIPDB, and VirusTotal keys listed above. AbuseIPDB and VirusTotal remain optional for normal operation when their specialist lookups are not needed.
+
 Open `notebooks/sentinel_ai_walkthrough.ipynb`, restart the kernel, and run all cells from top to bottom. The notebook walks through:
 
 1. Model-selected tool execution and structured responses
 2. Structured supervisor routing across all four specialists
 3. Hybrid RAG ingestion and retrieval
 4. Cross-thread long-term memory
-5. Human approval interruption and same-thread resume
+5. Human approval and rejection through same-thread interrupt/resume
 6. Retry and controlled-fallback behavior
 7. Routing workflow execution
 8. LangSmith trace inspection

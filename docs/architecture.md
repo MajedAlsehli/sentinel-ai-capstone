@@ -12,7 +12,7 @@ Track A uses a supervisor-and-workers architecture. The supervisor calls `with_s
 
 ## Hybrid RAG
 
-The local pipeline loads the Markdown security documents, splits them with overlap and source metadata, embeds the chunks with OpenAI embeddings, stores deterministic chunk identifiers in Chroma, and retrieves the most relevant passages. Local documents provide stable response guidance while live tools provide current reputation and infrastructure information. Combining both sources keeps procedural guidance reproducible without treating local text as current reputation data.
+The local pipeline loads the Markdown security documents, splits them with overlap and source metadata, embeds the chunks with OpenAI embeddings, stores deterministic chunk identifiers in Chroma, and retrieves the most relevant passages. Local documents provide stable response guidance while live tools provide current reputation and infrastructure information. This is more suitable than only 2-Step RAG, which cannot gather current reputation, and fully Agentic RAG, which would make stable procedural retrieval less predictable and scoped.
 
 ## State and memory
 
