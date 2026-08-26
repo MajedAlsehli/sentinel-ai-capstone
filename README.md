@@ -8,6 +8,8 @@
 
 Sentinel AI is an agentic cybersecurity investigation workflow for suspicious emails, URLs, IP addresses, and file hashes. An LLM supervisor selects a specialist; that specialist chooses and executes real tools; Hybrid RAG adds stable incident-response guidance; a structured analyzer produces a cautious verdict; and LangGraph pauses before an approved report is persisted.
 
+The repository includes both an executed evidence notebook for grading and a polished Streamlit investigation console for product demonstration. Both surfaces call the same workflow; the dashboard does not replace the rubric evidence or hide a second implementation.
+
 The project was completed under an SDAIA Academy training programme. See the [SDAIA Academy GitHub organization](https://github.com/SDAIAAcademy).
 
 ## Why this project exists
@@ -46,6 +48,16 @@ Structured LLM supervisor ──► email / URL / IP / file specialist
 
 The primary workflow pattern is **Routing**. The LLM supervisor produces a validated `RouteDecision` and selects one specialist based on the dominant artifact. This fits the problem because email, URL, network, and malware investigations need distinct prompts and tools, while a single evidence-synthesis stage keeps verdicts consistent. Detailed component and state boundaries are documented in [docs/architecture.md](docs/architecture.md).
 
+## Interactive investigation console
+
+Launch the product interface from the repository root:
+
+```bash
+streamlit run app.py
+```
+
+The console provides four safe example artifact types, model-selected specialist routing, tool and RAG evidence, a genuine human-approval pause, same-thread resume, structured response actions, LangSmith readiness, and approved PDF download. Credentials remain server-side in `.env`; the interface displays only readiness booleans and redacts configured secret values from provider errors.
+
 ## Rubric evidence
 
 | Section | Implementation | Demonstration |
@@ -63,7 +75,7 @@ See [docs/rubric_evidence.md](docs/rubric_evidence.md) for the written justifica
 
 ### Verified execution snapshot
 
-The submitted notebook was restarted and executed top-to-bottom on 26 August 2026. All 13 code cells completed with saved outputs and no error outputs; all 14 regression tests passed; the final submission validator passed; and the inspected LangSmith investigation trace contained 18 runs, one model-selected tool run, and zero recorded errors. The trace showed `specialist_investigation` as the slowest stage at 5.326 seconds, identifying the model/tool exchange as the clearest latency target.
+The submitted notebook was restarted and executed top-to-bottom on 26 August 2026. All 13 code cells completed with saved outputs and no error outputs; all 14 core regression tests captured at execution time passed; the final submission validator passed; and the inspected LangSmith investigation trace contained 18 runs, one model-selected tool run, and zero recorded errors. The trace showed `specialist_investigation` as the slowest stage at 5.326 seconds, identifying the model/tool exchange as the clearest latency target. The current repository suite contains 19 passing tests, including pure UI helpers and a credential-free Streamlit render test.
 
 ## Installation
 
@@ -108,9 +120,29 @@ python scripts/validate_submission.py
 
 The validator checks submission identity, placeholders, notebook execution counts and errors, saved outputs, required evidence phrases, secret hygiene in tracked files, and Git history.
 
+## Expected output
+
+A successful investigation visibly produces:
+
+1. A Pydantic-validated supervisor destination and routing rationale.
+2. A specialist assessment backed by at least one executed tool record.
+3. Retrieved incident-response context with source metadata.
+4. A structured verdict, confidence, evidence list, limitations, and recommendations.
+5. A real approval interrupt for high-risk or analyst-forced review.
+6. A resumed result that either writes an approved PDF or records rejection without persistence.
+7. A LangSmith trace containing the model, tool, retriever, retry, workflow, and timing spans.
+
+The notebook saves evidence for every item. The Streamlit console exposes the same stages as an interactive analyst workflow.
+
+## Technologies
+
+Python 3.11+, LangChain, LangGraph Functional API, OpenAI structured outputs and embeddings, Chroma, Pydantic, LangSmith, Streamlit, ReportLab, and Pytest.
+
 ## Repository structure
 
 ```text
+app.py             Streamlit investigation console
+.streamlit/        Versioned visual theme; secrets are ignored
 src/sentinel/
   agents/          LLM supervisor, specialists, structured synthesis
   tools/           Live and local analysis tools
@@ -119,6 +151,7 @@ src/sentinel/
   workflows/       Functional API workflow and reliability evidence
   models/          Pydantic data contracts
   reporting/       Approved PDF generation
+  ui/              Safe UI formatting, labels, samples, and download guards
 data/              Threat-intelligence knowledge corpus
 notebooks/         Executed capstone evidence
 docs/              Architecture, rubric mapping, submission checklist

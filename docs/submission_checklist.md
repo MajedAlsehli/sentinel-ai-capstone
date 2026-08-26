@@ -39,3 +39,13 @@
 - [x] Every notebook demo cell has captured output
 - [x] Git repository contains meaningful incremental commits
 - [x] Final `python scripts/validate_submission.py` audit passes
+
+## Product demonstration layer
+
+- [x] Streamlit console invokes the same graded LangGraph workflow
+- [x] Four representative artifact examples are available without keyword routing
+- [x] Human interrupt and resume are interactive in the console
+- [x] Tool evidence, RAG count, assessment, limitations, and actions are visible
+- [x] Approved PDF is downloadable and rejected reports are not persisted
+- [x] UI errors redact configured credentials
+- [x] Credential-free Streamlit render test passes

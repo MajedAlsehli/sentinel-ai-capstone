@@ -6,6 +6,8 @@ Sentinel accepts a textual cybersecurity investigation and returns a structured 
 
 ## Component model
 
+`app.py` is a thin Streamlit delivery layer over the production workflow. It collects an investigation request, shows server-side credential readiness as booleans, initializes the same retriever used by the notebook, and invokes `sentinel_workflow`. A pending interrupt is retained in Streamlit session state with its `thread_id`; approving or rejecting the report resumes that exact checkpoint through `Command(resume=...)`. The interface never routes artifacts itself and therefore cannot bypass the LLM supervisor.
+
 The supervisor in `src/sentinel/agents/supervisor.py` uses `with_structured_output(RouteDecision)`. Its four destinations are email, URL, IP, and file specialists. There is no keyword router. The decision is consumed by the Functional API workflow, which dispatches to exactly one specialist.
 
 Every specialist binds an appropriate tool set, allows the model to choose calls, executes each requested tool, appends a `ToolMessage`, and gives the resulting transcript back to the model. The second model pass returns `SpecialistAssessment`, while every actual invocation is retained as `ToolEvidence` with arguments, output, status, and latency. This separates a request to use a tool from proof that the tool actually ran.
@@ -43,6 +45,8 @@ Pydantic models define `RouteDecision`, `SpecialistAssessment`, `ToolEvidence`, 
 ## Failure and trust assumptions
 
 - Provider output is untrusted evidence and is serialized before inclusion in prompts.
+- Model explanations embedded in the dashboard's styled HTML are escaped before rendering.
+- Configured secrets are redacted from provider errors before any message reaches the interface.
 - Tool timeouts are bounded; errors are recorded without becoming benign conclusions.
 - A router configuration failure remains fatal because substituting a keyword router would violate the architecture.
 - Evidence-stage failures become `unknown`, preserving analyst trust and preventing fabricated certainty.
