@@ -34,7 +34,7 @@ The workflow is implemented with `@task` and `@entrypoint`, not `StateGraph`. LL
 
 ## Observability
 
-`.env.example` uses `LANGCHAIN_TRACING_V2=true` exactly as required and assigns all runs to `sentinel-ai-capstone`. The notebook waits for background tracers, queries the actual LangSmith project, locates the current workflow trace, counts its child runs and errors, calculates latency, and prints a trace-derived observation. This prevents a configuration flag from being presented as proof that a trace exists.
+`.env.example` uses `LANGCHAIN_TRACING_V2=true` exactly as required and assigns all runs to `sentinel-ai-capstone`. The notebook waits for background tracers, queries the actual LangSmith project, locates the `sentinel_workflow` child inside its Functional API `LangGraph` root trace, counts runs, tool executions, and errors, calculates latency, and prints a trace-derived observation. This prevents a configuration flag from being presented as proof that a trace exists.
 
 ## Data contracts
 

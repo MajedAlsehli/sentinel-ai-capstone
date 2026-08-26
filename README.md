@@ -61,6 +61,10 @@ The primary workflow pattern is **Routing**. The LLM supervisor produces a valid
 
 See [docs/rubric_evidence.md](docs/rubric_evidence.md) for the written justification and exact code locations for all eight sections.
 
+### Verified execution snapshot
+
+The submitted notebook was restarted and executed top-to-bottom on 26 August 2026. All 13 code cells completed with saved outputs and no error outputs; all 14 regression tests passed; the final submission validator passed; and the inspected LangSmith investigation trace contained 18 runs, one model-selected tool run, and zero recorded errors. The trace showed `specialist_investigation` as the slowest stage at 5.326 seconds, identifying the model/tool exchange as the clearest latency target.
+
 ## Installation
 
 Python 3.11 or newer is required.

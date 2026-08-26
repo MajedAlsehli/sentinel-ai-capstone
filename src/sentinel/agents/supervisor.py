@@ -14,7 +14,11 @@ def route_request(request: str) -> RouteDecision:
                 "system",
                 "You are a cybersecurity investigation supervisor. Select exactly one "
                 "specialist from the provided schema. Base the decision on the dominant "
-                "artifact and explain the decision; do not use a keyword rule.",
+                "artifact and explain the decision; do not use a keyword rule. Treat a "
+                "complete raw email (headers plus message body) as an email artifact even "
+                "when the message contains embedded URLs, IPs, filenames, or hashes. "
+                "Choose a URL, IP, or file specialist only when that indicator itself is "
+                "the primary object of the investigation.",
             ),
             (
                 "human",

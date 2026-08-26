@@ -30,4 +30,6 @@ The explicitly selected workflow pattern is **Routing**. It matches the mutually
 
 ## 8. LangSmith observability — 5 points
 
-Tracing uses `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_API_KEY`, and a dedicated `LANGCHAIN_PROJECT`. After the real workflow runs, the notebook waits for trace delivery and queries LangSmith rather than merely printing an environment variable. It then derives a written observation from the actual root run—name, latency, child-run count, error count, and tool-call count—so the claim remains tied to visible trace data.
+Tracing uses `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_API_KEY`, and a dedicated `LANGCHAIN_PROJECT`. After the real workflow runs, the notebook waits for trace delivery and queries LangSmith rather than merely printing an environment variable. It finds the `sentinel_workflow` child inside the Functional API `LangGraph` root trace, then derives a written observation from the actual run tree—name, latency, run count, error count, and tool-run count—so the claim remains tied to visible trace data.
+
+In the final saved execution, the verified investigation trace contained 18 runs, one model-selected tool run, and zero recorded errors. `specialist_investigation` was the slowest run at 5.326 seconds, showing that the model/tool exchange—rather than local retrieval, checkpointing, or PDF persistence—is the first latency optimization target.

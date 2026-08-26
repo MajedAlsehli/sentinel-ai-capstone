@@ -25,7 +25,7 @@
 - [x] Real `RetryPolicy` and controlled fallback are implemented
 - [x] Routing is explicitly named and justified
 - [x] Correct LangSmith tracing variable is configured
-- [ ] Actual LangSmith trace observation is captured in the submitted notebook
+- [x] Actual LangSmith trace observation is captured in the submitted notebook
 
 ## Verification and repository quality
 
@@ -35,7 +35,7 @@
 - [x] `.gitignore` excludes secrets, caches, vector data, and generated reports
 - [x] Current tracked-source scan contains no obvious API key values
 - [x] Notebook cells have stable IDs
-- [ ] Notebook restarted and executed top-to-bottom with no errors
-- [ ] Every notebook demo cell has captured output
+- [x] Notebook restarted and executed top-to-bottom with no errors
+- [x] Every notebook demo cell has captured output
 - [x] Git repository contains meaningful incremental commits
-- [ ] Final `python scripts/validate_submission.py` audit passes
+- [x] Final `python scripts/validate_submission.py` audit passes
