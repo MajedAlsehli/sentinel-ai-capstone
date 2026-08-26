@@ -82,7 +82,7 @@ def test_retry_policy_and_controlled_fallback_both_fire():
     assert result["fallback_result"]["verdict"] == "unknown"
 
 
-def test_full_workflow_interrupts_resumes_and_writes_report(monkeypatch, tmp_path):
+def test_full_workflow_approval_and_rejection_persistence(monkeypatch, tmp_path):
     class FakeRetriever:
         def invoke(self, _request):
             return [
@@ -159,6 +159,37 @@ def test_full_workflow_interrupts_resumes_and_writes_report(monkeypatch, tmp_pat
     assert resumed["retrieved_documents"] == 1
     assert resumed["finalization"]["status"] == "written"
     assert output_path.exists()
+
+    rejected_config = {
+        "configurable": {"thread_id": f"rejected-workflow-{uuid4()}"}
+    }
+    rejected_path = tmp_path / "rejected.pdf"
+    rejected_first = workflow_module.sentinel_workflow.invoke(
+        {
+            "request": "Review this raw email",
+            "force_human_review": True,
+            "output_path": str(rejected_path),
+        },
+        rejected_config,
+    )
+    assert "__interrupt__" in rejected_first
+
+    rejected = workflow_module.sentinel_workflow.invoke(
+        Command(
+            resume={
+                "approved": False,
+                "reviewer": "test analyst",
+                "reason": "The report needs more investigation.",
+            }
+        ),
+        rejected_config,
+    )
+    assert rejected["report"]["approved"] is False
+    assert rejected["finalization"] == {
+        "status": "not_approved",
+        "output_path": None,
+    }
+    assert not rejected_path.exists()
 
 
 def test_full_workflow_fails_safe_when_specialist_breaks(monkeypatch):
