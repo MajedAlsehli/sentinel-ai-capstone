@@ -61,7 +61,7 @@ def virustotal_key() -> str | None:
 def langsmith_status() -> dict[str, object]:
     """Expose tracing readiness without revealing any credential value."""
 
-    tracing_value = (get_env("LANGCHAIN_TRACING_V2", "false") or "false").lower()
+    tracing_value = (get_env("LANGCHAIN_TRACING_V2") or "").lower()
     return {
         "tracing_enabled": tracing_value in {"1", "true", "yes", "on"},
         "api_key_configured": bool(
