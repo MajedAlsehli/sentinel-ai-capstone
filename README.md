@@ -1,85 +1,32 @@
-# Sentinel AI — Evidence-Grounded Cybersecurity Investigation
+# Sentinel AI
 
-- **Author:** Majed Mohamed Alsehli (ماجد محمد السهلي)
+- **Author:** Majed Mohamed Alsehli
 - **Training programme:** SDAIA Academy — Building Agentic AI Systems
 - **Instructor:** محمد البلادي
-- **Cohort:** 17 August 2025 – 21 May 2026
-- **Declared track:** A — Supervisor + workers
+- **Cohort:** 23–27 August 2026
+- **Declared track:** Track A — Supervisor + workers
 
-Sentinel AI is an agentic cybersecurity investigation workflow for suspicious emails, URLs, IP addresses, and file hashes. An LLM supervisor selects a specialist; that specialist chooses and executes real tools; Hybrid RAG adds stable incident-response guidance; a structured analyzer produces a cautious verdict; and LangGraph pauses before an approved report is persisted.
+Sentinel AI is an agentic cybersecurity investigation system for suspicious emails, URLs, IP addresses, and file hashes. A structured LLM supervisor selects a specialist, the specialist executes model-selected tools, Hybrid RAG adds local security guidance, and a structured analyzer produces a cautious assessment. High-risk reports pause for analyst approval before they are written to disk.
 
-The repository includes both an executed evidence notebook for grading and a polished Streamlit investigation console for product demonstration. Both surfaces call the same workflow; the dashboard does not replace the rubric evidence or hide a second implementation.
+The project was developed through an [SDAIA Academy](https://github.com/SDAIAAcademy) training programme.
 
-The project was completed under an SDAIA Academy training programme. See the [SDAIA Academy GitHub organization](https://github.com/SDAIAAcademy).
+## Features
 
-## Why this project exists
-
-Security analysts routinely move between artifact identification, live reputation services, internal guidance, risk synthesis, and approval. Fragmented lookups are slow and can blur the difference between observed evidence and inference. Sentinel keeps those stages explicit and auditable. Provider failures remain visible, an unavailable result is never treated as benign, and a failed evidence pipeline falls back to `unknown` rather than inventing a conclusion.
-
-## Architecture
-
-```text
-Investigation request
-        │
-        ▼
-Structured LLM supervisor ──► email / URL / IP / file specialist
-                                      │
-                                      ▼
-                              model-selected real tools
-                                      │
-                   ┌──────────────────┴──────────────────┐
-                   ▼                                     ▼
-          structured tool evidence          semantic RAG retrieval
-                   └──────────────────┬──────────────────┘
-                                      ▼
-                         Pydantic threat assessment
-                                      │
-                            high-risk or forced review?
-                              ┌───────┴────────┐
-                              │ yes            │ no
-                              ▼                ▼
-                         interrupt()       policy approval
-                              │
-                      Command(resume=...)
-                              └───────┬────────┘
-                                      ▼
-                         approved PDF + Store fact
-```
-
-The primary workflow pattern is **Routing**. The LLM supervisor produces a validated `RouteDecision` and selects one specialist based on the dominant artifact. This fits the problem because email, URL, network, and malware investigations need distinct prompts and tools, while a single evidence-synthesis stage keeps verdicts consistent. Detailed component and state boundaries are documented in [docs/architecture.md](docs/architecture.md).
-
-## Interactive investigation console
-
-Launch the product interface from the repository root:
-
-```bash
-streamlit run app.py
-```
-
-The console provides four safe example artifact types, model-selected specialist routing, tool and RAG evidence, a genuine human-approval pause, same-thread resume, structured response actions, LangSmith readiness, and approved PDF download. Credentials remain server-side in `.env`; the interface displays only readiness booleans and redacts configured secret values from provider errors.
-
-## Rubric evidence
-
-| Section | Implementation | Demonstration |
-|---|---|---|
-| Agent fundamentals | Model-selected calls are executed and returned as `ToolMessage`; parsed outputs use Pydantic | Notebook §2; tool tests |
-| Multi-agent routing | `ChatOpenAI.with_structured_output(RouteDecision)` supervisor | Notebook §3 |
-| RAG | Markdown load → split → OpenAI embeddings → idempotent Chroma store → retrieval | Notebook §4 |
-| Context and state | `InMemorySaver` with `thread_id`; separate `InMemoryStore` | Notebook §5 |
-| Human-in-the-loop | Real `interrupt()` before report persistence and same-thread `Command(resume=...)` | Notebook §6 |
-| Functional API and errors | `@task`, `@entrypoint`, `RetryPolicy`, controlled fallback | Notebook §7 |
-| Workflow pattern | Routing, explicitly named and justified | Notebook §8 |
-| LangSmith | Correct tracing variable and trace-derived observation | Notebook §9 |
-
-See [docs/rubric_evidence.md](docs/rubric_evidence.md) for the written justification and exact code locations for all eight sections.
-
-### Verified execution snapshot
-
-The submitted notebook was restarted and executed top-to-bottom on 26 August 2026. All 13 code cells completed with saved outputs and no error outputs; all 14 core regression tests captured at execution time passed; the final submission validator passed; and the inspected LangSmith investigation trace contained 18 runs, one model-selected tool run, and zero recorded errors. The trace showed `specialist_investigation` as the slowest stage at 5.326 seconds, identifying the model/tool exchange as the clearest latency target. The current repository suite contains 19 passing tests, including pure UI helpers and a credential-free Streamlit render test.
+- Structured-output LLM supervisor with email, URL, IP, and file specialists
+- Argument-dependent local and external tools selected by the model
+- Pydantic models for routes, specialist assessments, tool observations, analysis, approval, and report finalization
+- Hybrid RAG with Markdown loading, chunking, OpenAI embeddings, Chroma storage, and semantic retrieval
+- LangGraph Functional API workflow built with `@task` and `@entrypoint`
+- Short-term checkpoint state with explicit `thread_id`
+- Separate long-term Store with cross-thread access
+- Human approval through `interrupt()` and same-thread `Command(resume=...)`
+- Bounded `RetryPolicy` for transient failures and an `unknown` fallback for permanent investigation failures
+- LangSmith tracing with run-tree inspection
+- Approved PDF incident reports
 
 ## Installation
 
-Python 3.11 or newer is required.
+Python 3.11 or newer is recommended.
 
 ```bash
 python -m venv .venv
@@ -89,86 +36,61 @@ python -m pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Configure secrets only in `.env`. The file is ignored by Git.
+## Configuration
 
-| Variable | Required | Purpose |
-|---|---:|---|
-| `OPENAI_API_KEY` | Yes | Structured routing, tool choice, embeddings, and final analysis |
-| `LANGCHAIN_API_KEY` | Yes for final evidence | LangSmith trace upload and inspection |
-| `LANGCHAIN_TRACING_V2=true` | Yes for final evidence | Enables the tracing mode named by the rubric |
-| `LANGCHAIN_PROJECT` | Yes for final evidence | Keeps capstone traces in one project |
-| `ABUSEIPDB_API_KEY` | Optional | Live IP reputation; absence is recorded explicitly |
-| `VIRUSTOTAL_API_KEY` | Optional | Live URL/file reputation; absence is recorded explicitly |
+Add local credentials to `.env`:
 
-Public IP ownership lookup, public urlscan search, local email parsing, and local hash validation remain available without the optional provider keys. External reputation queries disclose the supplied indicator to that provider; do not submit confidential tokens or personal data.
+| Variable | Purpose |
+|---|---|
+| `OPENAI_API_KEY` | Routing, tool selection, embeddings, and analysis |
+| `OPENAI_MODEL` | Chat model name |
+| `OPENAI_EMBEDDING_MODEL` | Embedding model name |
+| `LANGCHAIN_API_KEY` | LangSmith tracing and run inspection |
+| `LANGCHAIN_TRACING_V2=true` | Enables tracing |
+| `LANGCHAIN_PROJECT` | LangSmith project name |
+| `ABUSEIPDB_API_KEY` | Optional IP reputation lookup |
+| `VIRUSTOTAL_API_KEY` | Optional URL and file reputation lookup |
 
-## Verify and run
+Public IP ownership lookup, public urlscan search, local email parsing, and local hash validation remain available without the optional provider keys. External reputation queries disclose the supplied indicator to the selected provider.
 
-Run the credential-free automated suite first:
+## Usage
 
-```bash
-python -m pytest
-```
-
-Then open [notebooks/sentinel_capstone.ipynb](notebooks/sentinel_capstone.ipynb), restart the kernel, and run every cell from top to bottom. The notebook intentionally fails early if required credentials or tracing are unavailable; this prevents an apparently successful submission with missing evidence.
-
-For a final submission audit:
+Run the automated tests:
 
 ```bash
-python scripts/validate_submission.py
+python -m pytest -q
 ```
 
-The validator checks submission identity, placeholders, notebook execution counts and errors, saved outputs, required evidence phrases, secret hygiene in tracked files, and Git history.
+Open `notebooks/sentinel_ai_walkthrough.ipynb`, restart the kernel, and run all cells from top to bottom. The notebook walks through:
 
-## Expected output
+1. Model-selected tool execution and structured responses
+2. Structured supervisor routing across all four specialists
+3. Hybrid RAG ingestion and retrieval
+4. Cross-thread long-term memory
+5. Human approval interruption and same-thread resume
+6. Retry and controlled-fallback behavior
+7. Routing workflow execution
+8. LangSmith trace inspection
 
-A successful investigation visibly produces:
-
-1. A Pydantic-validated supervisor destination and routing rationale.
-2. A specialist assessment backed by at least one executed tool record.
-3. Retrieved incident-response context with source metadata.
-4. A structured verdict, confidence, evidence list, limitations, and recommendations.
-5. A real approval interrupt for high-risk or analyst-forced review.
-6. A resumed result that either writes an approved PDF or records rejection without persistence.
-7. A LangSmith trace containing the model, tool, retriever, retry, workflow, and timing spans.
-
-The notebook saves evidence for every item. The Streamlit console exposes the same stages as an interactive analyst workflow.
-
-## Technologies
-
-Python 3.11+, LangChain, LangGraph Functional API, OpenAI structured outputs and embeddings, Chroma, Pydantic, LangSmith, Streamlit, ReportLab, and Pytest.
-
-## Repository structure
+## Project structure
 
 ```text
-app.py             Streamlit investigation console
-.streamlit/        Versioned visual theme; secrets are ignored
 src/sentinel/
-  agents/          LLM supervisor, specialists, structured synthesis
-  tools/           Live and local analysis tools
-  rag/             Document loading, splitting, embedding, Chroma retrieval
-  memory/          Cross-thread Store and checkpointer demonstration
-  workflows/       Functional API workflow and reliability evidence
-  models/          Pydantic data contracts
-  reporting/       Approved PDF generation
-  ui/              Safe UI formatting, labels, samples, and download guards
-data/              Threat-intelligence knowledge corpus
-notebooks/         Executed capstone evidence
-docs/              Architecture, rubric mapping, submission checklist
-scripts/           Final submission validator
-tests/             Credential-free regression suite
+  agents/       Supervisor, specialists, and structured analysis
+  tools/        Local parsers and external reputation clients
+  rag/          Document loading, embeddings, Chroma, and retrieval
+  memory/       Long-term Store and cross-thread workflow
+  workflows/    Functional API orchestration and reliability behavior
+  models/       Pydantic data contracts
+  reporting/    PDF report generation
+data/           Local threat-intelligence documents
+notebooks/      Executed system walkthrough
+docs/           Technical architecture
+tests/          Automated tests
 ```
 
 ## Safety and limitations
 
-- Sentinel is an analyst-support system, not an autonomous blocking or deletion system.
-- Live reputation results can be stale, incomplete, unavailable, or wrong; the analyzer must correlate sources.
-- In-memory checkpoint and Store implementations demonstrate state semantics but are process-local. A production deployment should use durable database-backed implementations.
-- The default corpus is intentionally small and educational. Production knowledge needs ownership, versioning, access control, and freshness review.
-- Only an approved report is written to disk. Rejected reports are returned as structured data and are not persisted.
+Sentinel supports analyst decisions; it does not block traffic, delete files, open suspicious links, or notify third parties. Provider failures and missing results remain explicit limitations, and investigation failures return `unknown` rather than a fabricated malicious or benign verdict. The in-memory checkpointer and Store are process-local; a production service should replace them with durable backends.
 
-## Documentation
-
-- [Technical architecture](docs/architecture.md)
-- [Rubric evidence and design rationale](docs/rubric_evidence.md)
-- [Submission checklist](docs/submission_checklist.md)
+See [docs/architecture.md](docs/architecture.md) for implementation details.
