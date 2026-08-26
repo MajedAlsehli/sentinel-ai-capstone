@@ -2,7 +2,7 @@
 
 - **Author:** Majed Mohamed Alsehli
 - **Training programme:** SDAIA Academy — Building Agentic AI Systems
-- **Instructor:** محمد البلادي
+- **Instructor:** Mohamed Albeladi
 - **Cohort:** 23–27 August 2026
 - **Declared track:** Track A — Supervisor + workers
 
