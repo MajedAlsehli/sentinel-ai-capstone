@@ -42,7 +42,7 @@ def get_preference(key: str) -> dict[str, Any] | None:
 
 @entrypoint(checkpointer=memory_demo_checkpointer, store=store)
 def cross_thread_memory_workflow(inputs: dict[str, Any]):
-    """Write/read Store facts in independent graph threads for rubric evidence."""
+    """Write and read Store facts from independent graph threads."""
 
     analyst_id = inputs.get("analyst_id", "demo-analyst")
     runtime_store = get_store()

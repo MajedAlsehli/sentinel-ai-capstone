@@ -1,4 +1,4 @@
-"""Deterministic, credential-free evidence for the two reliability strategies."""
+"""Deterministic exercise for retry and controlled-fallback behavior."""
 
 from __future__ import annotations
 

@@ -95,7 +95,7 @@ def analyze(
     specialist = json.dumps(specialist_result, ensure_ascii=False, default=str)
     return analyze_with_context(
         request,
-        f"Structured specialist evidence:\n{specialist}\n\nRAG context:\n{context}",
+        f"Structured specialist findings:\n{specialist}\n\nRAG context:\n{context}",
     ).model_dump()
 
 
@@ -104,13 +104,13 @@ def fallback_analysis(request: str, error_type: str) -> dict[str, Any]:
     return ThreatAnalysis(
         verdict="unknown",
         confidence=0.0,
-        threat_type="insufficient_evidence",
+        threat_type="insufficient_information",
         explanation=(
-            "The primary evidence pipeline failed, so Sentinel used its fail-safe "
+            "The primary investigation pipeline failed, so Sentinel used its fail-safe "
             "unknown verdict instead of fabricating a conclusion."
         ),
-        evidence=[f"Primary pipeline error handled by fallback: {error_type}"],
-        recommendations=["Retry when the required model or evidence service is available."],
+        findings=[f"Primary pipeline error handled by fallback: {error_type}"],
+        recommendations=["Retry when the required model or provider is available."],
         requires_human_approval=False,
     ).model_dump()
 
@@ -226,7 +226,9 @@ def sentinel_workflow(inputs: dict[str, Any]):
     return {
         "route": route,
         "specialist": specialist,
-        "executed_tool_count": len(specialist["tool_evidence"]) if specialist else 0,
+        "executed_tool_count": (
+            len(specialist["tool_observations"]) if specialist else 0
+        ),
         "retrieved_documents": len(context),
         "report": report,
         "finalization": finalization,
@@ -235,7 +237,7 @@ def sentinel_workflow(inputs: dict[str, Any]):
 
 @entrypoint(checkpointer=approval_demo_checkpointer)
 def approval_gate_demo(inputs: dict[str, Any]):
-    """Credential-free deterministic proof of interrupt and resume semantics."""
+    """Deterministic interrupt-and-resume exercise that requires no credentials."""
 
     approval = human_approval(inputs["analysis"], force_human_review=True).result()
     return ApprovalDecision.model_validate(approval).model_dump()

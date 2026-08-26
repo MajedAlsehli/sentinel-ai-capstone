@@ -34,11 +34,11 @@ def write_incident_pdf(report: dict, output_path="reports/incident_report.pdf"):
         _paragraph(f"Threat type: {analysis['threat_type']}", styles["BodyText"]),
         _paragraph(analysis["explanation"], styles["BodyText"]),
         Spacer(1, 12),
-        _paragraph("Evidence", styles["Heading2"]),
+        _paragraph("Findings", styles["Heading2"]),
     ]
     story.extend(
         _paragraph(f"• {item}", styles["BodyText"])
-        for item in analysis.get("evidence", [])
+        for item in analysis.get("findings", [])
     )
     story.extend([Spacer(1, 12), _paragraph("Recommendations", styles["Heading2"])])
     story.extend(

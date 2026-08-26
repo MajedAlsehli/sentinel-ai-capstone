@@ -3,7 +3,7 @@
 The important distinction in this module is that ``bind_tools`` is not treated
 as completed tool use. The model chooses calls, Sentinel executes them, returns
 ``ToolMessage`` results to the model, and finally requests a Pydantic-validated
-assessment. Every invocation is retained as auditable evidence.
+assessment. Every invocation is retained as a structured observation.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from sentinel.config import get_chat_model, require_openai
 from sentinel.models.schemas import (
     SpecialistAssessment,
     SpecialistResult,
-    ToolEvidence,
+    ToolObservation,
 )
 from sentinel.tools.abuseipdb import check_ip_reputation
 from sentinel.tools.email import extract_email_indicators
@@ -46,8 +46,10 @@ def _json_safe(value: Any) -> Any:
         return str(value)
 
 
-def execute_tool_call(tool_call: dict[str, Any], tools: Iterable[BaseTool]) -> ToolEvidence:
-    """Execute one model-selected call and return a structured audit record."""
+def execute_tool_call(
+    tool_call: dict[str, Any], tools: Iterable[BaseTool]
+) -> ToolObservation:
+    """Execute one model-selected call and return a structured observation."""
 
     registry = {candidate.name: candidate for candidate in tools}
     tool_name = str(tool_call.get("name", ""))
@@ -60,11 +62,11 @@ def execute_tool_call(tool_call: dict[str, Any], tools: Iterable[BaseTool]) -> T
         try:
             output = _json_safe(registry[tool_name].invoke(arguments))
             status = "success"
-        except Exception as exc:  # A tool failure becomes explicit evidence.
+        except Exception as exc:  # A tool failure becomes an explicit observation.
             output = {"error_type": type(exc).__name__, "message": str(exc)}
             status = "error"
     latency_ms = round((time.perf_counter() - started) * 1000)
-    return ToolEvidence(
+    return ToolObservation(
         tool_name=tool_name,
         arguments=arguments,
         output=output,
@@ -89,12 +91,12 @@ def _run_tool_specialist(
                 + " You must use at least one relevant tool when the request "
                 "contains an observable indicator. Never claim that a tool ran "
                 "unless its ToolMessage is present. Treat not_configured and "
-                "not_found as limitations, not as benign evidence."
+                "not_found as limitations, not as benign findings."
             )
         ),
         HumanMessage(content=request),
     ]
-    evidence: list[ToolEvidence] = []
+    observations: list[ToolObservation] = []
     last_content = ""
 
     for round_number in range(MAX_TOOL_ROUNDS):
@@ -103,7 +105,7 @@ def _run_tool_specialist(
         last_content = str(response.content or "")
         tool_calls = list(response.tool_calls or [])
         if not tool_calls:
-            if not evidence and round_number == 0:
+            if not observations and round_number == 0:
                 messages.append(
                     HumanMessage(
                         content=(
@@ -117,11 +119,13 @@ def _run_tool_specialist(
 
         for tool_call in tool_calls:
             item = execute_tool_call(tool_call, tools)
-            evidence.append(item)
+            observations.append(item)
             messages.append(
                 ToolMessage(
                     content=json.dumps(item.output, ensure_ascii=False, default=str),
-                    tool_call_id=str(tool_call.get("id", f"call-{len(evidence)}")),
+                    tool_call_id=str(
+                        tool_call.get("id", f"call-{len(observations)}")
+                    ),
                     name=item.tool_name,
                     status=item.status,
                 )
@@ -132,14 +136,14 @@ def _run_tool_specialist(
         [
             SystemMessage(
                 content=(
-                    "Summarize specialist evidence conservatively. Distinguish observed "
+                    "Summarize specialist findings conservatively. Distinguish observed "
                     "tool results from inference and list every material limitation."
                 )
             ),
             HumanMessage(
                 content=(
                     f"Destination: {destination}\nRequest: {request}\n"
-                    f"Tool evidence: {json.dumps([item.model_dump() for item in evidence], default=str)}\n"
+                    f"Tool observations: {json.dumps([item.model_dump() for item in observations], default=str)}\n"
                     f"Earlier specialist response: {last_content}"
                 )
             ),
@@ -148,7 +152,7 @@ def _run_tool_specialist(
     return SpecialistResult(
         destination=destination,
         assessment=assessment,
-        tool_evidence=evidence,
+        tool_observations=observations,
     )
 
 

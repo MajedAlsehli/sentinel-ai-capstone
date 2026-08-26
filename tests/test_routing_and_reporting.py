@@ -3,6 +3,7 @@ from pathlib import Path
 from sentinel.agents import supervisor
 from sentinel.models.schemas import RouteDecision
 from sentinel.reporting.pdf import write_incident_pdf
+from sentinel.workflows import workflow as workflow_module
 
 
 def test_supervisor_uses_structured_llm_output(monkeypatch):
@@ -39,8 +40,8 @@ def test_approved_report_is_written_as_pdf(tmp_path):
             "verdict": "malicious",
             "confidence": 0.9,
             "threat_type": "test",
-            "explanation": "Evidence was confirmed.",
-            "evidence": ["indicator <one>"],
+            "explanation": "The finding was confirmed.",
+            "findings": ["indicator <one>"],
             "recommendations": ["isolate safely"],
         },
     }
@@ -48,3 +49,18 @@ def test_approved_report_is_written_as_pdf(tmp_path):
     assert written.exists()
     assert written.read_bytes().startswith(b"%PDF")
     assert written.stat().st_size > 1_000
+
+
+def test_rejected_report_is_not_written(monkeypatch, tmp_path):
+    output_path = tmp_path / "rejected.pdf"
+
+    def unexpected_write(*_args, **_kwargs):
+        raise AssertionError("The PDF writer must not run for a rejected report")
+
+    monkeypatch.setattr(workflow_module, "write_incident_pdf", unexpected_write)
+    result = workflow_module.finalize_report.func(
+        {"approved": False}, str(output_path)
+    )
+
+    assert result == {"status": "not_approved", "output_path": None}
+    assert not output_path.exists()

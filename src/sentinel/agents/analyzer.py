@@ -12,14 +12,14 @@ def analyze_with_context(request: str, context: str) -> ThreatAnalysis:
         [
             (
                 "system",
-                "You are Sentinel's evidence synthesis analyst. Use only the supplied "
-                "specialist evidence and retrieved knowledge. Label uncertainty, do not "
-                "treat missing provider configuration as benign evidence, and request "
+                "You are Sentinel's investigation synthesis analyst. Use only the supplied "
+                "specialist findings and retrieved knowledge. Label uncertainty, do not "
+                "treat missing provider configuration as a benign result, and request "
                 "human approval for malicious or high-impact conclusions.",
             ),
             (
                 "human",
-                f"Investigation:\n{request}\n\nEvidence and RAG context:\n{context}",
+                f"Investigation:\n{request}\n\nFindings and RAG context:\n{context}",
             ),
         ]
     )

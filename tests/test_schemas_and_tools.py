@@ -37,12 +37,12 @@ def test_model_selected_tool_call_is_really_executed():
 
         return {"product": value * factor}
 
-    evidence = execute_tool_call(
+    observation = execute_tool_call(
         {"name": "multiply", "args": {"value": 7, "factor": 6}}, [multiply]
     )
-    assert evidence.status == "success"
-    assert evidence.output == {"product": 42}
-    assert evidence.arguments == {"value": 7, "factor": 6}
+    assert observation.status == "success"
+    assert observation.output == {"product": 42}
+    assert observation.arguments == {"value": 7, "factor": 6}
 
 
 def test_specialist_executes_call_and_returns_structured_result(monkeypatch):
@@ -88,9 +88,9 @@ def test_specialist_executes_call_and_returns_structured_result(monkeypatch):
     result = specialists.run_email_agent("Analyze the supplied raw email")
     assert result.destination == "email_agent"
     assert result.assessment.summary == "Parsed the supplied message."
-    assert len(result.tool_evidence) == 1
-    assert result.tool_evidence[0].tool_name == "extract_email_indicators"
-    assert result.tool_evidence[0].output["subject"] == "Urgent"
+    assert len(result.tool_observations) == 1
+    assert result.tool_observations[0].tool_name == "extract_email_indicators"
+    assert result.tool_observations[0].output["subject"] == "Urgent"
 
 
 def test_pydantic_list_defaults_are_not_shared():
@@ -100,5 +100,5 @@ def test_pydantic_list_defaults_are_not_shared():
     second = ThreatAnalysis(
         verdict="unknown", confidence=0, threat_type="test", explanation="second"
     )
-    first.evidence.append("only-first")
-    assert second.evidence == []
+    first.findings.append("only-first")
+    assert second.findings == []

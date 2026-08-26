@@ -9,7 +9,7 @@ from sentinel.models.schemas import (
     SpecialistAssessment,
     SpecialistResult,
     ThreatAnalysis,
-    ToolEvidence,
+    ToolObservation,
 )
 from sentinel.workflows import workflow as workflow_module
 from sentinel.workflows.reliability_demo import reliability_demo
@@ -52,7 +52,7 @@ def test_interrupt_and_command_resume_complete_same_thread():
         "confidence": 0.91,
         "threat_type": "credential_phishing",
         "explanation": "Deterministic approval-gate test.",
-        "evidence": ["test evidence"],
+        "findings": ["test finding"],
         "recommendations": ["review before persistence"],
         "requires_human_approval": True,
     }
@@ -65,7 +65,7 @@ def test_interrupt_and_command_resume_complete_same_thread():
             resume={
                 "approved": True,
                 "reviewer": "automated test analyst",
-                "reason": "Evidence was reviewed.",
+                "reason": "Findings were reviewed.",
             }
         ),
         config,
@@ -99,8 +99,8 @@ def test_full_workflow_interrupts_resumes_and_writes_report(monkeypatch, tmp_pat
             notable_indicators=["credential request"],
             limitations=[],
         ),
-        tool_evidence=[
-            ToolEvidence(
+        tool_observations=[
+            ToolObservation(
                 tool_name="extract_email_indicators",
                 arguments={"raw_email": "test"},
                 output={"urls": ["https://example.invalid"]},
@@ -113,8 +113,8 @@ def test_full_workflow_interrupts_resumes_and_writes_report(monkeypatch, tmp_pat
         verdict="malicious",
         confidence=0.92,
         threat_type="credential_phishing",
-        explanation="Structured evidence supports escalation.",
-        evidence=["credential request"],
+        explanation="Structured findings support escalation.",
+        findings=["credential request"],
         recommendations=["isolate the message"],
         requires_human_approval=True,
     )
@@ -149,7 +149,7 @@ def test_full_workflow_interrupts_resumes_and_writes_report(monkeypatch, tmp_pat
             resume={
                 "approved": True,
                 "reviewer": "test analyst",
-                "reason": "Evidence reviewed.",
+                "reason": "Findings reviewed.",
             }
         ),
         config,
@@ -180,4 +180,4 @@ def test_full_workflow_fails_safe_when_specialist_breaks(monkeypatch):
     )
     assert result["report"]["analysis"]["verdict"] == "unknown"
     assert result["report"]["analysis"]["confidence"] == 0.0
-    assert "RuntimeError" in result["report"]["analysis"]["evidence"][0]
+    assert "RuntimeError" in result["report"]["analysis"]["findings"][0]

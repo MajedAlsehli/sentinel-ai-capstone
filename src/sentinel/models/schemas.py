@@ -16,8 +16,8 @@ class SpecialistAssessment(BaseModel):
     limitations: list[str] = Field(default_factory=list)
 
 
-class ToolEvidence(BaseModel):
-    """Auditable record of a model-selected tool invocation."""
+class ToolObservation(BaseModel):
+    """Structured record of a model-selected tool invocation."""
 
     tool_name: str
     arguments: dict[str, Any] = Field(default_factory=dict)
@@ -29,7 +29,7 @@ class ToolEvidence(BaseModel):
 class SpecialistResult(BaseModel):
     destination: Literal["email_agent", "url_agent", "ip_agent", "file_agent"]
     assessment: SpecialistAssessment
-    tool_evidence: list[ToolEvidence] = Field(default_factory=list)
+    tool_observations: list[ToolObservation] = Field(default_factory=list)
 
 
 class ThreatAnalysis(BaseModel):
@@ -37,7 +37,7 @@ class ThreatAnalysis(BaseModel):
     confidence: float = Field(ge=0, le=1)
     threat_type: str
     explanation: str
-    evidence: list[str] = Field(default_factory=list)
+    findings: list[str] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
     requires_human_approval: bool = False
 

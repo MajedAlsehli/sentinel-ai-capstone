@@ -19,7 +19,7 @@ def validate_file_hash(file_hash: str) -> dict:
     hash_type = HASH_TYPES.get(len(normalized)) if is_hex else None
     return {
         "status": "ok",
-        "provider": "Sentinel local validator",
+        "provider": "Sentinel local hash check",
         "normalized_hash": normalized,
         "valid": hash_type is not None,
         "hash_type": hash_type,
